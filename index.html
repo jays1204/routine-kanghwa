@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ganghwa BBQ Invitation</title>
+  <style>
+    :root {
+      --bg: #eef8ee;
+      --paper: #fffdf7;
+      --ink: #2f3a2f;
+      --accent: #dd6a3f;
+      --accent-2: #f3b65c;
+      --line: #cfe2cc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 14%, #ffe8cc 0%, transparent 30%),
+        radial-gradient(circle at 84% 2%, #ffd8de 0%, transparent 30%),
+        radial-gradient(circle at 24% 88%, #d8f2d9 0%, transparent 38%),
+        linear-gradient(180deg, #f5ffe9 0%, #effae8 32%, var(--bg) 72%, #e4f3df 100%);
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(37, 26, 18, 0.78);
+      backdrop-filter: blur(3px);
+    }
+
+    .lock-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--paper);
+      border: 2px solid #d9e8d3;
+      border-radius: 18px;
+      padding: 18px 16px 16px;
+      box-shadow: 0 14px 36px rgba(38, 23, 12, 0.28);
+      text-align: center;
+      transition: transform 0.75s ease, opacity 0.75s ease;
+    }
+
+    .lock-card h2 {
+      margin: 0 0 8px;
+      font-family: "Palatino Linotype", "Times New Roman", serif;
+      font-size: 1.42rem;
+      color: #3f5139;
+    }
+
+    .lock-hint {
+      margin: 0 0 12px;
+      color: #557056;
+      font-size: 0.95rem;
+    }
+
+    .envelope {
+      position: relative;
+      width: 100%;
+      max-width: 335px;
+      margin: 0 auto 10px;
+      padding-top: 16px;
+    }
+
+    .envelope-paper {
+      border: 2px solid #c2dcbc;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #fffef8 0%, #f7ffe9 100%);
+      padding: 56px 12px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 14px;
+      height: 62px;
+      background: linear-gradient(180deg, #fffef8 0%, #f7ffe9 100%);
+      border: 2px solid #c2dcbc;
+      border-bottom: 0;
+      clip-path: polygon(0 0, 50% 94%, 100% 0, 100% 100%, 0 100%);
+      transform-origin: top center;
+      transition: transform 0.75s ease;
+      z-index: 3;
+    }
+
+    .envelope-paper::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 56px;
+      background: linear-gradient(180deg, #fffef8 0%, #f7ffe9 100%);
+      clip-path: polygon(0 0, 50% 80%, 100% 0, 100% 100%, 0 100%);
+      z-index: 1;
+    }
+
+    .dial-row {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .dial {
+      background: linear-gradient(160deg, #d8dde3 0%, #c7cdd5 50%, #eef2f6 100%);
+      border: 1px solid #9da5af;
+      border-radius: 10px;
+      padding: 8px 6px;
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+    }
+
+    .dial-btn {
+      border: 0;
+      width: 100%;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #f8fafc 0%, #c7ced7 45%, #a3acb7 100%);
+      color: #3b434c;
+      border: 1px solid #8f98a4;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 0 rgba(82, 92, 104, 0.35);
+      font-size: 0.88rem;
+      font-weight: 800;
+      line-height: 1;
+      padding: 5px 0;
+      cursor: pointer;
+    }
+
+    .dial-btn:active {
+      transform: translateY(1px);
+      background: linear-gradient(180deg, #c8d0d9 0%, #a1aab5 100%);
+      box-shadow:
+        inset 0 2px 4px rgba(58, 66, 74, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .dial-window {
+      width: 100%;
+      height: 60px;
+      border-radius: 8px;
+      border: 1px solid #949da8;
+      background: linear-gradient(180deg, #c7ced6 0%, #f7f9fb 50%, #bcc4ce 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dial-window::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        180deg,
+        rgba(198, 205, 214, 0.98) 0%,
+        rgba(198, 205, 214, 0.25) 26%,
+        rgba(255, 255, 255, 0) 42%,
+        rgba(255, 255, 255, 0) 58%,
+        rgba(187, 196, 207, 0.25) 74%,
+        rgba(187, 196, 207, 0.98) 100%
+      );
+      z-index: 2;
+    }
+
+    .dial-window::after {
+      content: "";
+      position: absolute;
+      left: 2px;
+      right: 2px;
+      top: 20px;
+      height: 20px;
+      border-top: 1px solid #97a0ab;
+      border-bottom: 1px solid #97a0ab;
+      background: rgba(255, 255, 255, 0.34);
+      border-radius: 4px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .dial-track {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      align-items: center;
+      justify-items: center;
+      transition: transform 0.16s ease;
+    }
+
+    .dial-digit {
+      display: block;
+      line-height: 1;
+      font-weight: 700;
+      color: #535b66;
+      min-width: 1ch;
+      opacity: 0.6;
+      font-size: 1.02rem;
+    }
+
+    .dial-digit.dial-current {
+      font-size: 1.36rem;
+      font-weight: 900;
+      color: #2d343c;
+      opacity: 1;
+    }
+
+    .dial-window.spin-up .dial-track {
+      transform: translateY(-5px);
+    }
+
+    .dial-window.spin-down .dial-track {
+      transform: translateY(5px);
+    }
+
+    .lock-form button {
+      border: 1px solid #88919d;
+      border-radius: 10px;
+      padding: 11px 14px;
+      cursor: pointer;
+      color: #2f3740;
+      background: linear-gradient(160deg, #f6f8fb 0%, #c4cbd4 42%, #9ca5b0 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.88),
+        inset 0 -1px 0 rgba(80, 89, 98, 0.35),
+        0 2px 6px rgba(69, 77, 86, 0.2);
+      font-weight: 700;
+      width: 100%;
+    }
+
+    .lock-form button:active {
+      transform: translateY(1px);
+      background: linear-gradient(160deg, #c7ced7 0%, #9ea8b4 100%);
+      box-shadow:
+        inset 0 2px 4px rgba(62, 70, 79, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .lock-screen.unlocking .envelope-flap {
+      transform: rotateX(165deg) translateY(-8px);
+    }
+
+    .lock-screen.unlocking .lock-card {
+      transform: translateY(-8px);
+      opacity: 0.95;
+    }
+
+    .lock-card.shake {
+      animation: shake 0.3s ease;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-3px); }
+      100% { transform: translateX(0); }
+    }
+
+    .error {
+      min-height: 20px;
+      margin-top: 10px;
+      color: #b32419;
+      font-size: 0.94rem;
+    }
+
+    .invitation {
+      display: none;
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: max(10px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
+    }
+
+    .card {
+      background: var(--paper);
+      border: 2px solid #d6e7d0;
+      border-radius: 18px;
+      box-shadow: 0 16px 36px rgba(72, 48, 25, 0.2);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 18px 14px 10px;
+      background:
+        linear-gradient(180deg, #f5ffe8 0%, #fff7e9 58%, #ffeed7 100%);
+      border-bottom: 1px dashed #c5dcbf;
+    }
+
+    .hero-arts {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      margin: 12px 0 4px;
+      font-family: "Palatino Linotype", "Times New Roman", serif;
+      letter-spacing: 0.02em;
+      font-size: clamp(1.45rem, 7vw, 2.2rem);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      text-align: center;
+      margin: 0;
+      color: #634f3d;
+      font-size: 0.95rem;
+    }
+
+    .content {
+      padding: 14px 12px 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    section {
+      padding: 13px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fffef9;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      color: #543f2f;
+    }
+
+    ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 7px 0;
+    }
+
+    .meta p {
+      margin: 6px 0;
+    }
+
+    .meta a {
+      color: #8d351c;
+      font-weight: 700;
+    }
+
+    .note {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: #735746;
+      font-weight: 700;
+    }
+
+    .dday-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: linear-gradient(135deg, #fff4df 0%, #ffe8bf 100%);
+      border: 1px solid #e2c992;
+    }
+
+    .dday-label {
+      margin: 0;
+      color: #7a4e1d;
+      font-weight: 700;
+    }
+
+    #ddayValue {
+      margin: 0;
+      font-size: clamp(1.28rem, 7vw, 2rem);
+      font-weight: 900;
+      color: #9f2f1b;
+      letter-spacing: 0.01em;
+    }
+
+    .settlement {
+      border: 1px solid #d4e4cb;
+      background: #f8fff4;
+    }
+
+    @media (min-width: 720px) {
+      .hero {
+        padding: 24px 22px 12px;
+      }
+
+      .hero-arts {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .content {
+        padding: 20px 20px 24px;
+        gap: 14px;
+      }
+
+      section {
+        padding: 16px;
+      }
+
+      .dday-box {
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="lockScreen" class="lock-screen">
+    <div class="lock-card">
+      <h2>초대장 입장</h2>
+      <p class="lock-hint">다이얼을 돌려서 비밀번호를 맞추면 봉투가 열립니다.</p>
+      <form id="lockForm" class="lock-form">
+        <div class="envelope">
+          <div id="envelopeFlap" class="envelope-flap" aria-hidden="true"></div>
+          <div class="envelope-paper">
+            <div class="dial-row">
+              <div class="dial" data-index="0">
+                <button type="button" class="dial-btn" data-dir="1" aria-label="첫 번째 숫자 올리기">▲</button>
+                <div class="dial-window">
+                  <div class="dial-track">
+                    <span class="dial-digit dial-prev">9</span>
+                    <span class="dial-digit dial-current">0</span>
+                    <span class="dial-digit dial-next">1</span>
+                  </div>
+                </div>
+                <button type="button" class="dial-btn" data-dir="-1" aria-label="첫 번째 숫자 내리기">▼</button>
+              </div>
+              <div class="dial" data-index="1">
+                <button type="button" class="dial-btn" data-dir="1" aria-label="두 번째 숫자 올리기">▲</button>
+                <div class="dial-window">
+                  <div class="dial-track">
+                    <span class="dial-digit dial-prev">9</span>
+                    <span class="dial-digit dial-current">0</span>
+                    <span class="dial-digit dial-next">1</span>
+                  </div>
+                </div>
+                <button type="button" class="dial-btn" data-dir="-1" aria-label="두 번째 숫자 내리기">▼</button>
+              </div>
+              <div class="dial" data-index="2">
+                <button type="button" class="dial-btn" data-dir="1" aria-label="세 번째 숫자 올리기">▲</button>
+                <div class="dial-window">
+                  <div class="dial-track">
+                    <span class="dial-digit dial-prev">9</span>
+                    <span class="dial-digit dial-current">0</span>
+                    <span class="dial-digit dial-next">1</span>
+                  </div>
+                </div>
+                <button type="button" class="dial-btn" data-dir="-1" aria-label="세 번째 숫자 내리기">▼</button>
+              </div>
+              <div class="dial" data-index="3">
+                <button type="button" class="dial-btn" data-dir="1" aria-label="네 번째 숫자 올리기">▲</button>
+                <div class="dial-window">
+                  <div class="dial-track">
+                    <span class="dial-digit dial-prev">9</span>
+                    <span class="dial-digit dial-current">0</span>
+                    <span class="dial-digit dial-next">1</span>
+                  </div>
+                </div>
+                <button type="button" class="dial-btn" data-dir="-1" aria-label="네 번째 숫자 내리기">▼</button>
+              </div>
+            </div>
+            <button type="submit">봉투 열기</button>
+          </div>
+        </div>
+      </form>
+      <p id="errorText" class="error"></p>
+    </div>
+  </div>
+
+  <main id="invitation" class="invitation">
+    <article class="card">
+      <header class="hero">
+        <div class="hero-arts">
+          <svg viewBox="0 0 280 180" role="img" aria-label="숯불 위 바베큐 일러스트">
+            <defs>
+              <linearGradient id="fireGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffcd61"/>
+                <stop offset="60%" stop-color="#f0762c"/>
+                <stop offset="100%" stop-color="#be3d18"/>
+              </linearGradient>
+            </defs>
+            <rect x="18" y="106" width="244" height="12" rx="4" fill="#3b2f2a"/>
+            <rect x="30" y="90" width="220" height="20" rx="6" fill="#52423c"/>
+            <rect x="42" y="68" width="196" height="22" rx="6" fill="#6d5a52"/>
+            <g fill="#2f2522">
+              <rect x="58" y="54" width="8" height="20"/>
+              <rect x="86" y="54" width="8" height="20"/>
+              <rect x="114" y="54" width="8" height="20"/>
+              <rect x="142" y="54" width="8" height="20"/>
+              <rect x="170" y="54" width="8" height="20"/>
+              <rect x="198" y="54" width="8" height="20"/>
+            </g>
+            <g>
+              <ellipse cx="78" cy="58" rx="20" ry="12" fill="#8f4c30"/>
+              <ellipse cx="132" cy="56" rx="22" ry="13" fill="#9f5234"/>
+              <ellipse cx="188" cy="58" rx="24" ry="12" fill="#995033"/>
+            </g>
+            <g fill="url(#fireGrad)">
+              <path d="M70 122 C62 108, 74 98, 82 84 C92 100, 96 112, 86 124 Z"/>
+              <path d="M112 126 C104 110, 116 100, 124 88 C134 104, 138 116, 126 128 Z"/>
+              <path d="M154 124 C146 108, 160 96, 168 82 C178 98, 182 112, 170 126 Z"/>
+              <path d="M196 122 C188 108, 202 98, 210 84 C220 98, 224 114, 212 124 Z"/>
+            </g>
+          </svg>
+          <svg viewBox="0 0 280 180" role="img" aria-label="Invitation 카드 일러스트">
+            <rect x="44" y="40" width="192" height="112" rx="10" fill="#e9f7df" stroke="#8ab88a" stroke-width="3"/>
+            <rect x="58" y="52" width="164" height="88" rx="8" fill="#fffef7" stroke="#b8d8b8"/>
+            <path d="M58 96 L140 136 L222 96" fill="none" stroke="#9fcf9f" stroke-width="3"/>
+            <circle cx="140" cy="96" r="16" fill="#ea7f96"/>
+            <text x="140" y="99.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="7.2" font-weight="700" fill="#fff" letter-spacing="0.4">INVITE</text>
+            <rect x="127" y="20" width="26" height="30" rx="6" fill="#ffe8ad"/>
+            <path d="M127 26 C140 18, 140 18, 153 26" fill="none" stroke="#ea7f96" stroke-width="4"/>
+            <circle cx="74" cy="62" r="4" fill="#ffd6dd"/>
+            <circle cx="206" cy="62" r="4" fill="#ffd6dd"/>
+            <circle cx="84" cy="122" r="3.6" fill="#ffeab9"/>
+            <circle cx="194" cy="122" r="3.6" fill="#ffeab9"/>
+          </svg>
+        </div>
+        <h1>Ganghwa BBQ Invitation</h1>
+        <p>강화도에서 여는 바베큐 파티에 초대합니다.</p>
+      </header>
+
+      <div class="content">
+        <section class="meta">
+          <h2>모임 안내</h2>
+          <p><strong>장소:</strong> <a href="https://naver.me/GsoCcFYS" target="_blank" rel="noopener noreferrer">스테이 이소숲</a></p>
+          <p><strong>도착:</strong> 5월 1일 오후 3시까지 도착</p>
+          <p><strong>준비물:</strong> 편한 옷, 체력</p>
+        </section>
+
+        <section>
+          <h2>짝궁 미션 안내</h2>
+          <p>미션은 총 3개이며 2명으로 이루어진 짝궁이 주어진 미션을 도맡아 수행합니다.</p>
+          <p id="pairNotice" class="note">짝궁은 출발 전날 공개됩니다.</p>
+          <ul>
+            <li>하나로마트가서 장봐오기</li>
+            <li>레몬 및 김치 등의 재료 손질해서 준비하기</li>
+            <li>불피우기 및 고기 굽기</li>
+          </ul>
+        </section>
+
+        <section class="dday-box">
+          <p class="dday-label">D-Day (KST)</p>
+          <p id="ddayValue">계산 중...</p>
+        </section>
+
+        <section class="settlement">
+          <h2>정산 안내</h2>
+          <ul>
+            <li>참여 취소해도 숙소는 1/N 입니다.</li>
+            <li>각자 자신 데려다준 운전자와 기름 값 정산하기 또는 소정의 정을 알아서 잘!</li>
+          </ul>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <script>
+    const PASSWORD = "9783";
+    const EVENT_DATE_KST = { y: 2026, m: 5, d: 1 };
+    const PAIR_ANNOUNCE_DATE_KST = { y: 2026, m: 4, d: 30 };
+    const PAIR_NOTICE_BEFORE = "짝궁은 출발 전날 공개됩니다.";
+    const PAIR_NOTICE_AFTER = "짝궁: 성임-민경, 지훈-재열, 지은-하린";
+
+    const lockScreen = document.getElementById("lockScreen");
+    const invitation = document.getElementById("invitation");
+    const lockForm = document.getElementById("lockForm");
+    const lockCard = document.querySelector(".lock-card");
+    const errorText = document.getElementById("errorText");
+    const ddayValue = document.getElementById("ddayValue");
+    const pairNotice = document.getElementById("pairNotice");
+    const dialElements = Array.from(document.querySelectorAll(".dial"));
+    const dialValues = [0, 0, 0, 0];
+    const params = new URLSearchParams(window.location.search);
+    const previewKstDate = params.get("kstDate");
+
+    function verifyPassword(input) {
+      return input === PASSWORD;
+    }
+
+    function getKstYmd(now) {
+      const fmt = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Seoul",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      });
+      const parts = fmt.formatToParts(now);
+      const y = Number(parts.find((p) => p.type === "year").value);
+      const m = Number(parts.find((p) => p.type === "month").value);
+      const d = Number(parts.find((p) => p.type === "day").value);
+      return { y, m, d };
+    }
+
+    function ymdToUtcMidnight(ymd) {
+      return Date.UTC(ymd.y, ymd.m - 1, ymd.d);
+    }
+
+    function parseYmd(ymdText) {
+      if (!ymdText || !/^\d{4}-\d{2}-\d{2}$/.test(ymdText)) return null;
+      const [y, m, d] = ymdText.split("-").map(Number);
+      if (!y || m < 1 || m > 12 || d < 1 || d > 31) return null;
+      return { y, m, d };
+    }
+
+    function getTodayKstYmd() {
+      const preview = parseYmd(previewKstDate);
+      if (preview) return preview;
+      return getKstYmd(new Date());
+    }
+
+    function calcDdayKst(todayYmd, eventYmd) {
+      const diffMs = ymdToUtcMidnight(eventYmd) - ymdToUtcMidnight(todayYmd);
+      const diffDays = Math.round(diffMs / 86400000);
+      if (diffDays > 0) return "D-" + diffDays;
+      if (diffDays === 0) return "D-Day";
+      return "행사 종료";
+    }
+
+    function renderDday() {
+      const todayKst = getTodayKstYmd();
+      ddayValue.textContent = calcDdayKst(todayKst, EVENT_DATE_KST);
+    }
+
+    function renderPairNotice() {
+      const todayKst = getTodayKstYmd();
+      const isAnnounced =
+        ymdToUtcMidnight(todayKst) >= ymdToUtcMidnight(PAIR_ANNOUNCE_DATE_KST);
+      pairNotice.textContent = isAnnounced ? PAIR_NOTICE_AFTER : PAIR_NOTICE_BEFORE;
+    }
+
+    function getCurrentCode() {
+      return dialValues.join("");
+    }
+
+    function animateDialWindow(windowEl, dir) {
+      const cls = dir > 0 ? "spin-up" : "spin-down";
+      windowEl.classList.add(cls);
+      window.setTimeout(function () {
+        windowEl.classList.remove(cls);
+      }, 170);
+    }
+
+    function renderDial(index) {
+      const dial = dialElements[index];
+      const value = dialValues[index];
+      const prev = (value + 1) % 10;
+      const next = (value + 9) % 10;
+      dial.querySelector(".dial-prev").textContent = String(prev);
+      dial.querySelector(".dial-current").textContent = String(value);
+      dial.querySelector(".dial-next").textContent = String(next);
+    }
+
+    function updateDial(index, dir) {
+      const dial = dialElements[index];
+      const windowEl = dial.querySelector(".dial-window");
+      const next = (dialValues[index] + dir + 10) % 10;
+      dialValues[index] = next;
+      renderDial(index);
+      animateDialWindow(windowEl, dir);
+    }
+
+    dialElements.forEach(function (dial, index) {
+      const buttons = dial.querySelectorAll(".dial-btn");
+      const windowEl = dial.querySelector(".dial-window");
+      renderDial(index);
+      buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          const dir = Number(btn.dataset.dir || "0");
+          updateDial(index, dir);
+        });
+      });
+      windowEl.addEventListener("wheel", function (e) {
+        e.preventDefault();
+        updateDial(index, e.deltaY < 0 ? 1 : -1);
+      }, { passive: false });
+    });
+
+    lockForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (verifyPassword(getCurrentCode())) {
+        errorText.textContent = "";
+        lockScreen.classList.add("unlocking");
+        window.setTimeout(function () {
+          lockScreen.style.display = "none";
+          invitation.style.display = "block";
+          renderDday();
+          renderPairNotice();
+        }, 700);
+        return;
+      }
+      errorText.textContent = "비밀번호가 올바르지 않습니다. 다이얼을 다시 맞춰주세요.";
+      lockCard.classList.remove("shake");
+      window.setTimeout(function () {
+        lockCard.classList.add("shake");
+      }, 0);
+    });
+  </script>
+</body>
+</html>
