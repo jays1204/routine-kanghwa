@@ -426,6 +426,140 @@
         align-items: center;
       }
     }
+
+    /* 편지지 이미지 모달 */
+    .img-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.78);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .img-modal.open {
+      display: flex;
+    }
+
+    .img-modal-inner {
+      position: relative;
+      max-width: min(680px, 100%);
+      width: 100%;
+    }
+
+    .img-modal-inner img {
+      width: 100%;
+      border-radius: 14px;
+      display: block;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .img-modal-close {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: #fff;
+      color: #333;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      line-height: 1;
+    }
+
+    .img-modal-close:hover {
+      background: #f0f0f0;
+    }
+
+    #bbqSvg {
+      cursor: pointer;
+    }
+
+    .card {
+      cursor: pointer;
+    }
+
+    /* 참석자 모달 */
+    .attendee-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .attendee-modal.open {
+      display: flex;
+    }
+
+    .attendee-modal-inner {
+      position: relative;
+      background: var(--paper);
+      border: 2px solid #d6e7d0;
+      border-radius: 16px;
+      padding: 32px 28px 24px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      text-align: center;
+    }
+
+    .attendee-modal-close {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: #fff;
+      color: #333;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .attendee-modal-close:hover {
+      background: #f0f0f0;
+    }
+
+    .attendee-modal-inner h3 {
+      margin: 0 0 16px;
+      font-family: "Palatino Linotype", "Times New Roman", serif;
+      font-size: 1.15rem;
+      color: #3f5139;
+    }
+
+    .attendee-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px 4px;
+    }
+
+    .attendee-list li {
+      font-size: 1rem;
+      color: var(--ink);
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -495,7 +629,7 @@
     <article class="card">
       <header class="hero">
         <div class="hero-arts">
-          <svg viewBox="0 0 280 180" role="img" aria-label="숯불 위 바베큐 일러스트">
+          <svg id="bbqSvg" viewBox="0 0 280 180" role="img" aria-label="숯불 위 바베큐 일러스트">
             <defs>
               <linearGradient id="fireGrad" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stop-color="#ffcd61"/>
@@ -578,6 +712,29 @@
       </div>
     </article>
   </main>
+
+  <div id="attendeeModal" class="attendee-modal" role="dialog" aria-modal="true" aria-label="참석자 명단">
+    <div class="attendee-modal-inner">
+      <button class="attendee-modal-close" id="attendeeModalClose" aria-label="닫기">✕</button>
+      <h3>참석자</h3>
+      <ul class="attendee-list">
+        <li>한지훈</li>
+        <li>장성임</li>
+        <li>우정식</li>
+        <li>신지은</li>
+        <li>서민경</li>
+        <li>배재열</li>
+        <li>전하린</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="imgModal" class="img-modal" role="dialog" aria-modal="true" aria-label="장작 이미지">
+    <div class="img-modal-inner">
+      <button class="img-modal-close" id="imgModalClose" aria-label="닫기">✕</button>
+      <img src="https://image.fmkorea.com/files/attach/new4/20240725/7286424214_486616_477e235b01b80c77994beefa5cf6fddd.jpeg" alt="장작 이미지">
+    </div>
+  </div>
 
   <script>
     const PASSWORD = "9783";
@@ -698,6 +855,47 @@
         e.preventDefault();
         updateDial(index, e.deltaY < 0 ? 1 : -1);
       }, { passive: false });
+    });
+
+    const imgModal = document.getElementById("imgModal");
+    const imgModalClose = document.getElementById("imgModalClose");
+    const bbqSvg = document.getElementById("bbqSvg");
+    const attendeeModal = document.getElementById("attendeeModal");
+    const attendeeModalClose = document.getElementById("attendeeModalClose");
+    const card = document.querySelector(".card");
+
+    bbqSvg.addEventListener("click", function (e) {
+      e.stopPropagation();
+      imgModal.classList.add("open");
+    });
+
+    imgModalClose.addEventListener("click", function (e) {
+      e.stopPropagation();
+      imgModal.classList.remove("open");
+    });
+
+    imgModal.addEventListener("click", function (e) {
+      if (e.target === imgModal) imgModal.classList.remove("open");
+    });
+
+    card.addEventListener("click", function () {
+      attendeeModal.classList.add("open");
+    });
+
+    attendeeModalClose.addEventListener("click", function (e) {
+      e.stopPropagation();
+      attendeeModal.classList.remove("open");
+    });
+
+    attendeeModal.addEventListener("click", function (e) {
+      if (e.target === attendeeModal) attendeeModal.classList.remove("open");
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        imgModal.classList.remove("open");
+        attendeeModal.classList.remove("open");
+      }
     });
 
     lockForm.addEventListener("submit", function (e) {
