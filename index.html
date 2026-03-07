@@ -2,72 +2,151 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Ganghwa BBQ Invitation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #eef8ee;
-      --paper: #fffdf7;
-      --ink: #2f3a2f;
-      --accent: #dd6a3f;
-      --accent-2: #f3b65c;
-      --line: #cfe2cc;
+      --bg:         #0b0905;
+      --surface:    #161108;
+      --surface-2:  #1e170e;
+      --border:     rgba(210, 165, 85, 0.18);
+      --border-dim: rgba(210, 165, 85, 0.08);
+      --ember:      #d45c22;
+      --ember-glow: rgba(212, 92, 34, 0.35);
+      --gold:       #c08a30;
+      --cream:      #f0e6d0;
+      --text:       #c8b898;
+      --text-dim:   #6a5a48;
+      --green:      #2a4828;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      margin: 0;
-      font-family: "Trebuchet MS", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 10% 14%, #ffe8cc 0%, transparent 30%),
-        radial-gradient(circle at 84% 2%, #ffd8de 0%, transparent 30%),
-        radial-gradient(circle at 24% 88%, #d8f2d9 0%, transparent 38%),
-        linear-gradient(180deg, #f5ffe9 0%, #effae8 32%, var(--bg) 72%, #e4f3df 100%);
+      font-family: 'Noto Serif KR', serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
       -webkit-text-size-adjust: 100%;
     }
 
+    button, [role="button"] {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    /* ── Grain overlay ── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ════════════════════════════════
+       LOCK SCREEN
+    ════════════════════════════════ */
     .lock-screen {
       position: fixed;
       inset: 0;
-      z-index: 999;
+      z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      background: rgba(37, 26, 18, 0.78);
-      backdrop-filter: blur(3px);
+      background: var(--bg);
+      overflow: hidden;
     }
 
+    /* Radial warmth behind card */
+    .lock-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 55% at 50% 60%, rgba(212, 92, 34, 0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 30% 30%, rgba(192, 138, 48, 0.05) 0%, transparent 60%);
+      animation: glowPulse 5s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.7; }
+      50%       { opacity: 1; }
+    }
+
+    /* Floating ember particles */
+    .ember-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: emberFloat linear infinite;
+    }
+
+    @keyframes emberFloat {
+      0%   { transform: translateY(0) translateX(0) scale(1);   opacity: 0; }
+      8%   { opacity: 1; }
+      85%  { opacity: 0.5; }
+      100% { transform: translateY(-110vh) translateX(var(--drift)) scale(0.2); opacity: 0; }
+    }
+
+    /* Lock card */
     .lock-card {
-      width: 100%;
-      max-width: 420px;
-      background: var(--paper);
-      border: 2px solid #d9e8d3;
-      border-radius: 18px;
-      padding: 18px 16px 16px;
-      box-shadow: 0 14px 36px rgba(38, 23, 12, 0.28);
+      position: relative;
+      z-index: 2;
+      width: min(380px, calc(100% - 32px));
+      padding: 40px 24px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
       text-align: center;
-      transition: transform 0.75s ease, opacity 0.75s ease;
+      transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.9s ease;
+    }
+
+    .lock-screen.unlocking .lock-card {
+      transform: translateY(-28px) scale(0.97);
+      opacity: 0;
+    }
+
+    .lock-screen.unlocking .lock-glow {
+      opacity: 0;
+      transition: opacity 0.9s ease;
+    }
+
+    .lock-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 22px;
     }
 
     .lock-card h2 {
-      margin: 0 0 8px;
-      font-family: "Palatino Linotype", "Times New Roman", serif;
-      font-size: 1.42rem;
-      color: #3f5139;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: 2.4rem;
+      color: var(--cream);
+      line-height: 1.1;
+      margin-bottom: 8px;
+      letter-spacing: 0.01em;
     }
 
     .lock-hint {
-      margin: 0 0 16px;
-      color: #557056;
-      font-size: 0.95rem;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      font-weight: 300;
+      margin-bottom: 38px;
+      letter-spacing: 0.03em;
     }
 
+    /* Hidden native input */
     .lock-input {
       position: absolute;
       opacity: 0;
@@ -76,358 +155,627 @@
       pointer-events: none;
     }
 
-    .pin-dots {
+    .pin-row {
       display: flex;
       justify-content: center;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 8px;
+      margin-bottom: 38px;
       cursor: pointer;
+      /* larger tap area */
+      padding: 12px 0;
     }
 
     .pin-dot {
-      width: 20px;
-      height: 20px;
+      /* 44px tap target via padding trick */
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      border: 2px solid #7aaa7a;
+      border: none;
       background: transparent;
-      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.12s ease;
+    }
+
+    .pin-dot::after {
+      content: '';
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(192, 138, 48, 0.4);
+      background: transparent;
+      transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .pin-dot.filled::after {
+      background: var(--ember);
+      border-color: var(--ember);
+      box-shadow: 0 0 10px var(--ember-glow), 0 0 20px rgba(212, 92, 34, 0.2);
     }
 
     .pin-dot.filled {
-      background: #3a6a3a;
-      border-color: #3a6a3a;
       transform: scale(1.1);
     }
 
-    .lock-form button {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 14px;
-      cursor: pointer;
-      color: #fff;
-      background: #4a7c4a;
-      font-size: 1rem;
-      font-weight: 700;
+    .lock-sep {
+      width: 36px;
+      height: 1px;
+      background: var(--border);
+      margin: 0 auto 28px;
+    }
+
+    .lock-btn {
       width: 100%;
-      transition: background 0.2s;
+      padding: 14px;
+      min-height: 44px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--cream);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
     }
 
-    .lock-form button:active {
-      background: #3a6a3a;
-    }
-
-    .lock-screen.unlocking .lock-card {
-      transform: translateY(-8px);
-      opacity: 0;
+    .lock-btn:hover {
+      background: rgba(192, 138, 48, 0.06);
+      border-color: rgba(192, 138, 48, 0.35);
     }
 
     .lock-card.shake {
-      animation: shake 0.3s ease;
+      animation: shake 0.35s ease;
     }
 
     @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-3px); }
-      100% { transform: translateX(0); }
+      0%, 100% { transform: translateX(0); }
+      18%       { transform: translateX(-9px); }
+      36%       { transform: translateX(9px); }
+      54%       { transform: translateX(-6px); }
+      72%       { transform: translateX(5px); }
     }
 
-    .error {
+    .lock-error {
       min-height: 20px;
-      margin-top: 10px;
-      color: #b32419;
-      font-size: 0.94rem;
+      margin-top: 18px;
+      color: rgba(212, 92, 34, 0.85);
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
     }
 
+    /* ════════════════════════════════
+       INVITATION
+    ════════════════════════════════ */
     .invitation {
       display: none;
-      width: 100%;
-      max-width: 920px;
-      margin: 0 auto;
-      padding: max(10px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
     }
 
-    .card {
-      background: var(--paper);
-      border: 2px solid #d6e7d0;
-      border-radius: 18px;
-      box-shadow: 0 16px 36px rgba(72, 48, 25, 0.2);
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      /* mobile-first: compact padding */
+      padding: max(56px, env(safe-area-inset-top)) 20px max(56px, calc(env(safe-area-inset-bottom) + 40px));
+      text-align: center;
       overflow: hidden;
     }
 
-    .hero {
-      padding: 18px 14px 10px;
+    .hero-ambient {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
       background:
-        linear-gradient(180deg, #f5ffe8 0%, #fff7e9 58%, #ffeed7 100%);
-      border-bottom: 1px dashed #c5dcbf;
+        radial-gradient(ellipse 70% 50% at 50% 90%, rgba(212, 92, 34, 0.12) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 60% at 15% 40%,  rgba(42, 72, 40, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 40% at 85% 20%,  rgba(192, 138, 48, 0.06) 0%, transparent 55%);
     }
 
-    .hero-arts {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      align-items: center;
+    .hero-rule {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, transparent, var(--border));
+      margin-bottom: 24px;
+      animation: fadeDown 0.8s 0.2s both;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 22px;
+      animation: fadeDown 0.8s 0.35s both;
     }
 
     .hero h1 {
-      margin: 12px 0 4px;
-      font-family: "Palatino Linotype", "Times New Roman", serif;
-      letter-spacing: 0.02em;
-      font-size: clamp(1.45rem, 7vw, 2.2rem);
-      text-align: center;
-      line-height: 1.2;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(3.6rem, 14vw, 7.5rem);
+      line-height: 0.92;
+      color: var(--cream);
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+      animation: fadeDown 0.9s 0.5s both;
     }
 
-    .hero p {
-      text-align: center;
-      margin: 0;
-      color: #634f3d;
-      font-size: 0.95rem;
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
     }
 
-    .content {
-      padding: 14px 12px 16px;
-      display: grid;
-      gap: 10px;
+    .hero-sub {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      margin-bottom: 36px;
+      animation: fadeDown 0.8s 0.65s both;
     }
 
-    section {
-      padding: 13px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: #fffef9;
+    .hero-illustration {
+      width: min(380px, 86vw);
+      cursor: pointer;
+      animation: fadeDown 0.9s 0.8s both;
+      transition: transform 0.3s ease;
     }
 
-    h2 {
-      margin: 0 0 8px;
-      font-size: 1.05rem;
-      color: #543f2f;
-    }
 
-    ul {
-      margin: 8px 0 0;
-      padding-left: 20px;
-    }
-
-    li {
-      margin: 7px 0;
-    }
-
-    .meta p {
-      margin: 6px 0;
-    }
-
-    .meta a {
-      color: #8d351c;
-      font-weight: 700;
-    }
-
-    .note {
-      margin-top: 8px;
-      font-size: 0.95rem;
-      color: #735746;
-      font-weight: 700;
-    }
-
-    .dday-box {
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
       gap: 8px;
-      background: linear-gradient(135deg, #fff4df 0%, #ffe8bf 100%);
-      border: 1px solid #e2c992;
+      animation: fadeDown 1s 1.1s both;
     }
 
-    .dday-label {
-      margin: 0;
-      color: #7a4e1d;
-      font-weight: 700;
+    .hero-scroll-hint span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-dim);
     }
 
-    #ddayValue {
-      margin: 0;
-      font-size: clamp(1.28rem, 7vw, 2rem);
-      font-weight: 900;
-      color: #9f2f1b;
+    .scroll-line {
+      width: 1px;
+      height: 28px;
+      background: linear-gradient(to bottom, var(--border), transparent);
+      animation: scrollPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50%       { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Marquee strip ── */
+    .marquee-strip {
+      border-top: 1px solid var(--border-dim);
+      border-bottom: 1px solid var(--border-dim);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee-track {
+      display: inline-flex;
+      animation: marquee 24s linear infinite;
+    }
+
+    .marquee-track span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0 32px;
+    }
+
+    .marquee-track .dot {
+      color: var(--ember);
+      padding: 0;
+      letter-spacing: 0;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── Content area ── */
+    .content {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 32px 12px max(80px, calc(env(safe-area-inset-bottom) + 64px));
+      display: grid;
+      gap: 8px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-dim);
+      padding: 22px 18px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px; height: 0;
+      background: var(--ember);
+      transition: height 0.35s ease;
+    }
+
+    /* hover only on pointer devices */
+    @media (hover: hover) {
+      .card:hover { border-color: var(--border); }
+      .card:hover::after { height: 100%; }
+      .hero-illustration:hover { transform: translateY(-4px); }
+      .attendee-card:hover { background: var(--surface-2); border-color: var(--border); }
+      .attendee-card:hover .attendee-arrow { transform: translateX(4px); color: var(--ember); }
+    }
+
+    /* touch active states */
+    .card:active { border-color: var(--border); }
+    .attendee-card:active { background: var(--surface-2); }
+    .hero-illustration:active { transform: scale(0.97); }
+
+    .card-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--ember);
+      margin-bottom: 14px;
+    }
+
+    .card h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.4rem;
+      color: var(--cream);
+      margin-bottom: 18px;
       letter-spacing: 0.01em;
     }
 
-    .settlement {
-      border: 1px solid #d4e4cb;
-      background: #f8fff4;
+    .card p, .card li {
+      font-size: 0.88rem;
+      font-weight: 300;
+      line-height: 1.9;
+      color: var(--text);
     }
 
-    @media (min-width: 720px) {
-      .hero {
-        padding: 24px 22px 12px;
-      }
-
-      .hero-arts {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .content {
-        padding: 20px 20px 24px;
-        gap: 14px;
-      }
-
-      section {
-        padding: 16px;
-      }
-
-      .dday-box {
-        flex-direction: row;
-        align-items: center;
-      }
+    .card ul {
+      padding-left: 18px;
     }
 
-    /* 편지지 이미지 모달 */
-    .img-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: rgba(0, 0, 0, 0.78);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+    .card li { margin: 4px 0; }
+
+    .card a {
+      color: #d4804a;
+      text-underline-offset: 3px;
+      transition: color 0.2s;
     }
 
-    .img-modal.open {
+    .card a:hover { color: var(--gold); }
+
+    /* Info rows */
+    .info-row {
       display: flex;
+      gap: 12px;
+      margin: 5px 0;
+      font-size: 0.88rem;
     }
 
-    .img-modal-inner {
+    .info-label {
+      color: var(--text-dim);
+      font-weight: 300;
+      min-width: 52px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    /* ── D-Day card ── */
+    .dday-card {
+      background: var(--surface-2);
+      border: 1px solid rgba(192, 138, 48, 0.2);
+      padding: 36px 24px;
+      text-align: center;
       position: relative;
-      max-width: min(680px, 100%);
-      width: 100%;
+      overflow: hidden;
     }
 
-    .img-modal-inner img {
-      width: 100%;
-      border-radius: 14px;
-      display: block;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
-    }
-
-    .img-modal-close {
+    .dday-card::before {
+      content: '';
       position: absolute;
-      top: -14px;
-      right: -14px;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: none;
-      background: #fff;
-      color: #333;
-      font-size: 1.1rem;
-      font-weight: 700;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 80% at 50% 100%, rgba(212, 92, 34, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .dday-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    #ddayValue {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(4rem, 18vw, 7rem);
+      line-height: 1;
+      color: var(--cream);
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Pair notice ── */
+    #pairNotice {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 9px 18px;
+      border: 1px solid var(--border-dim);
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Attendee card (clickable) ── */
+    .attendee-card {
       cursor: pointer;
+      border-color: var(--border-dim);
+      transition: border-color 0.25s, background 0.25s;
+    }
+
+    .attendee-card-inner {
       display: flex;
       align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      justify-content: space-between;
+    }
+
+    .attendee-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--cream);
       line-height: 1;
     }
 
-    .img-modal-close:hover {
-      background: #f0f0f0;
+    .attendee-arrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      transition: transform 0.2s, color 0.2s;
     }
 
-    #bbqSvg {
-      cursor: pointer;
-    }
+    /* ── Settlement card ── */
+    .settlement-card::after { background: #3a6040; }
 
-    .card {
-      cursor: pointer;
-    }
-
-    /* 참석자 모달 */
-    .attendee-modal {
+    /* ════════════════════════════════
+       MODALS
+    ════════════════════════════════ */
+    .modal-backdrop {
       display: none;
       position: fixed;
       inset: 0;
-      z-index: 9999;
-      background: rgba(0, 0, 0, 0.6);
+      z-index: 9990;
+      background: rgba(5, 4, 2, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
 
-    .attendee-modal.open {
-      display: flex;
-    }
+    .modal-backdrop.open { display: flex; }
 
-    .attendee-modal-inner {
+    .modal-box {
       position: relative;
-      background: var(--paper);
-      border: 2px solid #d6e7d0;
-      border-radius: 16px;
-      padding: 32px 28px 24px;
-      max-width: 360px;
-      width: 100%;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 40px 32px 32px;
+      width: min(400px, 94vw);
+      animation: modalIn 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
     }
 
-    .attendee-modal-close {
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-close {
       position: absolute;
-      top: -14px;
-      right: -14px;
-      width: 36px;
-      height: 36px;
+      top: 12px; right: 12px;
+      width: 44px; height: 44px;
       border-radius: 50%;
-      border: none;
-      background: #fff;
-      color: #333;
-      font-size: 1.1rem;
-      font-weight: 700;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 0.9rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      transition: color 0.2s, border-color 0.2s;
+      line-height: 1;
     }
 
-    .attendee-modal-close:hover {
-      background: #f0f0f0;
+    .modal-close:hover {
+      color: var(--cream);
+      border-color: rgba(192, 138, 48, 0.5);
     }
 
-    .attendee-modal-inner h3 {
-      margin: 0 0 16px;
-      font-family: "Palatino Linotype", "Times New Roman", serif;
-      font-size: 1.15rem;
-      color: #3f5139;
+    .modal-box h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.6rem;
+      color: var(--cream);
+      margin-bottom: 24px;
     }
 
-    .attendee-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
+    .attendee-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px 4px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
 
-    .attendee-list li {
-      font-size: 1rem;
-      color: var(--ink);
+    .attendee-item {
+      padding: 12px 8px;
       text-align: center;
+      border: 1px solid var(--border-dim);
+      font-size: 0.9rem;
+      color: var(--text);
+      font-weight: 300;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+
+    .attendee-item:hover {
+      border-color: rgba(192, 138, 48, 0.35);
+      color: var(--cream);
+      background: var(--surface-2);
+    }
+
+    /* Image modal */
+    .img-modal-box {
+      position: relative;
+      max-width: min(580px, 94vw);
+      width: 100%;
+    }
+
+    .img-modal-box img {
+      width: 100%;
+      display: block;
+      border: 1px solid var(--border);
+    }
+
+    .img-modal-box .modal-close {
+      position: absolute;
+      top: -15px; right: -15px;
+      background: var(--surface);
+    }
+
+    /* ════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════ */
+
+    /* Mobile: bottom sheet modals */
+    @media (max-width: 599px) {
+      .modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .modal-box {
+        width: 100%;
+        max-width: 100%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        border-radius: 0;
+        padding: 32px 20px max(28px, calc(env(safe-area-inset-bottom) + 16px));
+        animation: sheetUp 0.35s cubic-bezier(0.34, 1.1, 0.64, 1);
+      }
+
+      @keyframes sheetUp {
+        from { transform: translateY(100%); opacity: 0.8; }
+        to   { transform: translateY(0);    opacity: 1; }
+      }
+
+      .modal-close {
+        top: 12px; right: 12px;
+      }
+
+      .img-modal-box {
+        width: calc(100% - 24px);
+        margin: 0 12px;
+        /* center vertically for image */
+      }
+
+      .img-modal-box .modal-close {
+        top: -50px; right: 0;
+        background: var(--surface);
+        border-color: var(--border);
+      }
+    }
+
+    @media (min-width: 600px) {
+      .lock-card {
+        padding: 52px 40px 40px;
+      }
+
+      .hero {
+        padding: 100px 40px 80px;
+      }
+
+      .hero-rule { height: 56px; margin-bottom: 36px; }
+
+      .content { padding: 48px 24px 120px; gap: 10px; }
+      .card { padding: 28px 24px; }
+    }
+
+    @media (min-width: 900px) {
+      .content { gap: 12px; }
+      .card { padding: 32px 28px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Grain texture overlay -->
+  <svg class="grain" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <filter id="grain-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain-filter)" opacity="0.032"/>
+  </svg>
+
+  <!-- ════ LOCK SCREEN ════ -->
   <div id="lockScreen" class="lock-screen">
+    <div class="lock-glow"></div>
+
     <div class="lock-card">
-      <h2>초대장 입장</h2>
-      <p class="lock-hint">비밀번호를 입력하세요.</p>
-      <form id="lockForm" class="lock-form">
-        <div class="pin-dots" id="pinDots" aria-hidden="true">
-          <span class="pin-dot" data-i="0"></span>
-          <span class="pin-dot" data-i="1"></span>
-          <span class="pin-dot" data-i="2"></span>
-          <span class="pin-dot" data-i="3"></span>
+      <p class="lock-eyebrow">Private Invitation</p>
+      <h2>초대장</h2>
+      <p class="lock-hint">비밀번호를 입력하세요</p>
+
+      <form id="lockForm">
+        <div class="pin-row" id="pinDots" aria-hidden="true">
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
         </div>
         <input
           id="lockInput"
@@ -438,271 +786,425 @@
           autocomplete="off"
           aria-label="비밀번호"
         >
-        <button type="submit">열기</button>
+        <div class="lock-sep"></div>
+        <button type="submit" class="lock-btn">열기 &ensp;/&ensp; Enter</button>
       </form>
-      <p id="errorText" class="error"></p>
+      <p id="errorText" class="lock-error"></p>
     </div>
   </div>
 
+  <!-- ════ INVITATION ════ -->
   <main id="invitation" class="invitation">
-    <article class="card">
-      <header class="hero">
-        <div class="hero-arts">
-          <svg id="bbqSvg" viewBox="0 0 280 180" role="img" aria-label="숯불 위 바베큐 일러스트">
-            <defs>
-              <linearGradient id="fireGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#ffcd61"/>
-                <stop offset="60%" stop-color="#f0762c"/>
-                <stop offset="100%" stop-color="#be3d18"/>
-              </linearGradient>
-            </defs>
-            <rect x="18" y="106" width="244" height="12" rx="4" fill="#3b2f2a"/>
-            <rect x="30" y="90" width="220" height="20" rx="6" fill="#52423c"/>
-            <rect x="42" y="68" width="196" height="22" rx="6" fill="#6d5a52"/>
-            <g fill="#2f2522">
-              <rect x="58" y="54" width="8" height="20"/>
-              <rect x="86" y="54" width="8" height="20"/>
-              <rect x="114" y="54" width="8" height="20"/>
-              <rect x="142" y="54" width="8" height="20"/>
-              <rect x="170" y="54" width="8" height="20"/>
-              <rect x="198" y="54" width="8" height="20"/>
-            </g>
-            <g>
-              <ellipse cx="78" cy="58" rx="20" ry="12" fill="#8f4c30"/>
-              <ellipse cx="132" cy="56" rx="22" ry="13" fill="#9f5234"/>
-              <ellipse cx="188" cy="58" rx="24" ry="12" fill="#995033"/>
-            </g>
-            <g fill="url(#fireGrad)">
-              <path d="M70 122 C62 108, 74 98, 82 84 C92 100, 96 112, 86 124 Z"/>
-              <path d="M112 126 C104 110, 116 100, 124 88 C134 104, 138 116, 126 128 Z"/>
-              <path d="M154 124 C146 108, 160 96, 168 82 C178 98, 182 112, 170 126 Z"/>
-              <path d="M196 122 C188 108, 202 98, 210 84 C220 98, 224 114, 212 124 Z"/>
-            </g>
-          </svg>
-          <svg viewBox="0 0 280 180" role="img" aria-label="Invitation 카드 일러스트">
-            <rect x="44" y="40" width="192" height="112" rx="10" fill="#e9f7df" stroke="#8ab88a" stroke-width="3"/>
-            <rect x="58" y="52" width="164" height="88" rx="8" fill="#fffef7" stroke="#b8d8b8"/>
-            <path d="M58 96 L140 136 L222 96" fill="none" stroke="#9fcf9f" stroke-width="3"/>
-            <circle cx="140" cy="96" r="16" fill="#ea7f96"/>
-            <text x="140" y="99.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="7.2" font-weight="700" fill="#fff" letter-spacing="0.4">INVITE</text>
-            <rect x="127" y="20" width="26" height="30" rx="6" fill="#ffe8ad"/>
-            <path d="M127 26 C140 18, 140 18, 153 26" fill="none" stroke="#ea7f96" stroke-width="4"/>
-            <circle cx="74" cy="62" r="4" fill="#ffd6dd"/>
-            <circle cx="206" cy="62" r="4" fill="#ffd6dd"/>
-            <circle cx="84" cy="122" r="3.6" fill="#ffeab9"/>
-            <circle cx="194" cy="122" r="3.6" fill="#ffeab9"/>
-          </svg>
-        </div>
-        <h1>Ganghwa BBQ Invitation</h1>
-        <p>강화도에서 여는 바베큐 파티에 초대합니다.</p>
-      </header>
 
-      <div class="content">
-        <section class="meta">
-          <h2>모임 안내</h2>
-          <p><strong>장소:</strong> <a href="https://naver.me/GsoCcFYS" target="_blank" rel="noopener noreferrer">스테이 이소숲</a></p>
-          <p><strong>도착:</strong> 5월 1일 오후 3시까지 도착</p>
-          <p><strong>준비물:</strong> 편한 옷, 체력</p>
-        </section>
+    <!-- Hero -->
+    <header class="hero">
+      <div class="hero-ambient"></div>
+      <div class="hero-rule"></div>
+      <p class="hero-eyebrow">May 1, 2026 &ensp;·&ensp; 강화도 이소숲</p>
 
-        <section>
-          <h2>짝궁 미션 안내</h2>
-          <p>미션은 총 3개이며 2명으로 이루어진 짝궁이 주어진 미션을 도맡아 수행합니다.</p>
-          <p id="pairNotice" class="note">짝궁은 출발 전날 공개됩니다.</p>
-          <ul>
-            <li>하나로마트가서 장봐오기</li>
-            <li>레몬 및 김치 등의 재료 손질해서 준비하기</li>
-            <li>불피우기 및 고기 굽기</li>
-          </ul>
-        </section>
+      <h1>Ganghwa<br><em>BBQ</em></h1>
+      <p class="hero-sub">강화도에서 여는 바베큐 파티에 초대합니다</p>
 
-        <section class="dday-box">
-          <p class="dday-label">D-Day (KST)</p>
-          <p id="ddayValue">계산 중...</p>
-        </section>
+      <!-- BBQ Illustration (click → image modal) -->
+      <div class="hero-illustration" id="bbqIllustration" role="button" aria-label="장작 이미지 보기" tabindex="0">
+        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="숯불 바베큐 그릴 일러스트">
+          <defs>
+            <linearGradient id="grillBody" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1e170e"/>
+              <stop offset="100%" stop-color="#130d07"/>
+            </linearGradient>
+            <linearGradient id="meatA" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#8a4228"/>
+              <stop offset="100%" stop-color="#5a2414"/>
+            </linearGradient>
+            <linearGradient id="meatB" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7c3c24"/>
+              <stop offset="100%" stop-color="#4e2010"/>
+            </linearGradient>
+            <linearGradient id="fireUp" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#8a1e08"/>
+              <stop offset="45%" stop-color="#cc4415"/>
+              <stop offset="100%" stop-color="#e8880a" stop-opacity="0"/>
+            </linearGradient>
+            <radialGradient id="emberGlow" cx="50%" cy="80%" r="60%">
+              <stop offset="0%" stop-color="#d04010" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="#d04010" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="soft">
+              <feGaussianBlur stdDeviation="4"/>
+            </filter>
+            <filter id="soft2">
+              <feGaussianBlur stdDeviation="2"/>
+            </filter>
+          </defs>
 
-        <section class="settlement">
-          <h2>정산 안내</h2>
-          <ul>
-            <li>참여 취소해도 숙소는 1/N 입니다.</li>
-            <li>각자 자신 데려다준 운전자와 기름 값 정산하기 또는 소정의 정을 알아서 잘!</li>
-          </ul>
-        </section>
+          <!-- Floor glow -->
+          <ellipse cx="200" cy="205" rx="130" ry="18" fill="url(#emberGlow)" filter="url(#soft)"/>
+
+          <!-- Legs -->
+          <line x1="138" y1="160" x2="114" y2="210" stroke="#2a1e12" stroke-width="6" stroke-linecap="round"/>
+          <line x1="262" y1="160" x2="286" y2="210" stroke="#2a1e12" stroke-width="6" stroke-linecap="round"/>
+          <line x1="165" y1="160" x2="158" y2="210" stroke="#221810" stroke-width="5" stroke-linecap="round"/>
+          <line x1="235" y1="160" x2="242" y2="210" stroke="#221810" stroke-width="5" stroke-linecap="round"/>
+          <!-- Cross brace -->
+          <rect x="108" y="188" width="184" height="6" rx="3" fill="#201508"/>
+
+          <!-- Grill body (bowl) -->
+          <rect x="104" y="122" width="192" height="40" rx="7" fill="url(#grillBody)" stroke="#2e2014" stroke-width="1.5"/>
+          <!-- Inner cavity -->
+          <rect x="114" y="130" width="172" height="26" rx="4" fill="#0e0804"/>
+
+          <!-- Ember blobs inside -->
+          <ellipse cx="155" cy="148" rx="26" ry="8" fill="#aa2e0e" opacity="0.9" filter="url(#soft2)"/>
+          <ellipse cx="200" cy="145" rx="20" ry="7" fill="#c83810" opacity="0.9" filter="url(#soft2)"/>
+          <ellipse cx="248" cy="148" rx="24" ry="7" fill="#a02808" opacity="0.8" filter="url(#soft2)"/>
+
+          <!-- Top rim -->
+          <rect x="98" y="115" width="204" height="13" rx="5" fill="#2e2014"/>
+          <!-- Rim highlight -->
+          <rect x="100" y="115" width="200" height="2" rx="1" fill="#3e2e1a" opacity="0.6"/>
+
+          <!-- Grill grates -->
+          <g stroke="#382818" stroke-width="3.5" stroke-linecap="round">
+            <line x1="108" y1="112" x2="292" y2="112"/>
+            <line x1="108" y1="98"  x2="292" y2="98"/>
+            <line x1="108" y1="84"  x2="292" y2="84"/>
+          </g>
+          <!-- Grate vertical bars -->
+          <g stroke="#302014" stroke-width="2" stroke-linecap="round" opacity="0.6">
+            <line x1="148" y1="80" x2="148" y2="116"/>
+            <line x1="188" y1="80" x2="188" y2="116"/>
+            <line x1="228" y1="80" x2="228" y2="116"/>
+            <line x1="268" y1="80" x2="268" y2="116"/>
+          </g>
+
+          <!-- Fire flames -->
+          <g opacity="0.85">
+            <path d="M148 128 C140 112, 152 96, 148 78 C155 92, 164 108, 158 128 Z" fill="url(#fireUp)">
+              <animate attributeName="d"
+                values="M148 128 C140 112,152 96,148 78 C155 92,164 108,158 128 Z;
+                        M148 128 C143 114,154 98,150 76 C157 90,163 109,156 128 Z;
+                        M148 128 C140 112,152 96,148 78 C155 92,164 108,158 128 Z"
+                dur="2.1s" repeatCount="indefinite"/>
+            </path>
+            <path d="M198 128 C190 110, 202 92, 198 72 C206 88, 216 104, 210 128 Z" fill="url(#fireUp)">
+              <animate attributeName="d"
+                values="M198 128 C190 110,202 92,198 72 C206 88,216 104,210 128 Z;
+                        M198 128 C194 113,204 94,200 70 C208 87,215 106,208 128 Z;
+                        M198 128 C190 110,202 92,198 72 C206 88,216 104,210 128 Z"
+                dur="2.7s" repeatCount="indefinite"/>
+            </path>
+            <path d="M248 128 C240 114, 252 98, 248 80 C256 94, 264 110, 258 128 Z" fill="url(#fireUp)">
+              <animate attributeName="d"
+                values="M248 128 C240 114,252 98,248 80 C256 94,264 110,258 128 Z;
+                        M248 128 C244 115,253 100,250 78 C257 93,263 111,256 128 Z;
+                        M248 128 C240 114,252 98,248 80 C256 94,264 110,258 128 Z"
+                dur="1.9s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <!-- Meat pieces -->
+          <rect x="114" y="75" width="58" height="25" rx="9" fill="url(#meatA)" stroke="#6a2c18" stroke-width="1"/>
+          <rect x="178" y="73" width="68" height="27" rx="10" fill="url(#meatB)" stroke="#5e2414" stroke-width="1"/>
+          <rect x="252" y="75" width="48" height="25" rx="8" fill="url(#meatA)" stroke="#6a2c18" stroke-width="1"/>
+
+          <!-- Grill marks on meat -->
+          <g stroke="#3e1408" stroke-width="2.5" stroke-linecap="round" opacity="0.65">
+            <line x1="126" y1="77" x2="126" y2="98"/>
+            <line x1="138" y1="77" x2="138" y2="98"/>
+            <line x1="150" y1="77" x2="150" y2="98"/>
+            <line x1="191" y1="75" x2="191" y2="98"/>
+            <line x1="205" y1="75" x2="205" y2="98"/>
+            <line x1="219" y1="75" x2="219" y2="98"/>
+            <line x1="263" y1="77" x2="263" y2="98"/>
+            <line x1="275" y1="77" x2="275" y2="98"/>
+          </g>
+
+          <!-- Smoke wisps -->
+          <g fill="none" stroke="#8a7a68" stroke-linecap="round">
+            <path d="M140 72 C137 60, 143 50, 139 38" stroke-width="1.5">
+              <animate attributeName="d"
+                values="M140 72 C137 60,143 50,139 38;M140 72 C143 59,137 48,141 36;M140 72 C137 60,143 50,139 38"
+                dur="3s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.5;0.15;0.5" dur="3s" repeatCount="indefinite"/>
+            </path>
+            <path d="M200 70 C197 57, 204 46, 200 34" stroke-width="1.5">
+              <animate attributeName="d"
+                values="M200 70 C197 57,204 46,200 34;M200 70 C204 56,196 45,202 32;M200 70 C197 57,204 46,200 34"
+                dur="3.6s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.5;0.15;0.5" dur="3.6s" repeatCount="indefinite"/>
+            </path>
+            <path d="M262 72 C260 59, 266 49, 262 37" stroke-width="1.5">
+              <animate attributeName="d"
+                values="M262 72 C260 59,266 49,262 37;M262 72 C265 58,259 48,264 35;M262 72 C260 59,266 49,262 37"
+                dur="2.8s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.5;0.15;0.5" dur="2.8s" repeatCount="indefinite"/>
+            </path>
+          </g>
+        </svg>
       </div>
-    </article>
+
+      <div class="hero-scroll-hint" aria-hidden="true">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </header>
+
+    <!-- Marquee strip -->
+    <div class="marquee-strip" aria-hidden="true">
+      <div class="marquee-track">
+        <span>강화도</span><span class="dot">·</span>
+        <span>BBQ Party</span><span class="dot">·</span>
+        <span>May 2026</span><span class="dot">·</span>
+        <span>이소숲</span><span class="dot">·</span>
+        <span>Ganghwa Island</span><span class="dot">·</span>
+        <span>바베큐 파티</span><span class="dot">·</span>
+        <span>강화도</span><span class="dot">·</span>
+        <span>BBQ Party</span><span class="dot">·</span>
+        <span>May 2026</span><span class="dot">·</span>
+        <span>이소숲</span><span class="dot">·</span>
+        <span>Ganghwa Island</span><span class="dot">·</span>
+        <span>바베큐 파티</span><span class="dot">·</span>
+      </div>
+    </div>
+
+    <!-- Content cards -->
+    <div class="content">
+
+      <!-- Venue info -->
+      <div class="card">
+        <p class="card-label">모임 안내</p>
+        <h2>장소 & 일정</h2>
+        <div class="info-row">
+          <span class="info-label">장소</span>
+          <span class="info-value"><a href="https://naver.me/GsoCcFYS" target="_blank" rel="noopener noreferrer">스테이 이소숲</a></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">도착</span>
+          <span class="info-value">5월 1일 오후 3시까지</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">준비물</span>
+          <span class="info-value">편한 옷, 체력</span>
+        </div>
+      </div>
+
+      <!-- D-Day -->
+      <div class="dday-card">
+        <p class="dday-eyebrow">D-Day · KST</p>
+        <p id="ddayValue">—</p>
+      </div>
+
+      <!-- Mission -->
+      <div class="card">
+        <p class="card-label">짝꿍 미션</p>
+        <h2>Mission</h2>
+        <p style="margin-bottom:16px;">미션은 총 3개이며 2명으로 이루어진 짝꿍이 주어진 미션을 도맡아 수행합니다.</p>
+        <ul>
+          <li>하나로마트 가서 장봐오기</li>
+          <li>레몬 및 김치 등의 재료 손질해서 준비하기</li>
+          <li>불피우기 및 고기 굽기</li>
+        </ul>
+        <p id="pairNotice"></p>
+      </div>
+
+      <!-- Settlement -->
+      <div class="card settlement-card">
+        <p class="card-label">정산 안내</p>
+        <h2>Settlement</h2>
+        <ul>
+          <li>참여 취소해도 숙소는 1/N 입니다.</li>
+          <li>각자 자신 데려다준 운전자와 기름값 정산하기 또는 소정의 정을 알아서 잘!</li>
+        </ul>
+      </div>
+
+      <!-- Attendees (clickable) -->
+      <div class="card attendee-card" id="attendeeBtn" role="button" tabindex="0" aria-label="참석자 명단 보기">
+        <p class="card-label">참석자 명단 보기</p>
+        <div class="attendee-card-inner">
+          <div>
+            <h2 style="margin-bottom:4px;">참석자</h2>
+            <p style="font-size:0.82rem;">총 7명이 함께합니다</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <span class="attendee-count">7</span>
+            <span class="attendee-arrow">→</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </main>
 
-  <div id="attendeeModal" class="attendee-modal" role="dialog" aria-modal="true" aria-label="참석자 명단">
-    <div class="attendee-modal-inner">
-      <button class="attendee-modal-close" id="attendeeModalClose" aria-label="닫기">✕</button>
+  <!-- ════ ATTENDEE MODAL ════ -->
+  <div id="attendeeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="참석자 명단">
+    <div class="modal-box">
+      <button class="modal-close" id="attendeeModalClose" aria-label="닫기">✕</button>
       <h3>참석자</h3>
-      <ul class="attendee-list">
-        <li>한지훈</li>
-        <li>장성임</li>
-        <li>우정식</li>
-        <li>신지은</li>
-        <li>서민경</li>
-        <li>배재열</li>
-        <li>전하린</li>
-      </ul>
+      <div class="attendee-grid">
+        <div class="attendee-item">한지훈</div>
+        <div class="attendee-item">장성임</div>
+        <div class="attendee-item">우정식</div>
+        <div class="attendee-item">신지은</div>
+        <div class="attendee-item">서민경</div>
+        <div class="attendee-item">배재열</div>
+        <div class="attendee-item">전하린</div>
+      </div>
     </div>
   </div>
 
-  <div id="imgModal" class="img-modal" role="dialog" aria-modal="true" aria-label="장작 이미지">
-    <div class="img-modal-inner">
-      <button class="img-modal-close" id="imgModalClose" aria-label="닫기">✕</button>
+  <!-- ════ IMAGE MODAL ════ -->
+  <div id="imgModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="장작 이미지">
+    <div class="img-modal-box">
+      <button class="modal-close" id="imgModalClose" aria-label="닫기">✕</button>
       <img src="https://image.fmkorea.com/files/attach/new4/20240725/7286424214_486616_477e235b01b80c77994beefa5cf6fddd.jpeg" alt="장작 이미지">
     </div>
   </div>
 
   <script>
-    const PASSWORD = "9783";
-    const EVENT_DATE_KST = { y: 2026, m: 5, d: 1 };
-    const PAIR_ANNOUNCE_DATE_KST = { y: 2026, m: 4, d: 30 };
-    const PAIR_NOTICE_BEFORE = "짝궁은 출발 전날 공개됩니다.";
-    const PAIR_NOTICE_AFTER = "짝궁: 성임-민경, 지훈-재열, 지은-하린";
+    // ── Constants ──────────────────────────────
+    const PASSWORD              = "9783";
+    const EVENT_DATE_KST        = { y: 2026, m: 5,  d: 1  };
+    const PAIR_ANNOUNCE_DATE_KST= { y: 2026, m: 4,  d: 30 };
+    const PAIR_NOTICE_BEFORE    = "짝꿍은 출발 전날 공개됩니다.";
+    const PAIR_NOTICE_AFTER     = "짝꿍: 성임-민경, 지훈-재열, 지은-하린";
 
-    const lockScreen = document.getElementById("lockScreen");
-    const invitation = document.getElementById("invitation");
-    const lockForm = document.getElementById("lockForm");
-    const lockCard = document.querySelector(".lock-card");
-    const errorText = document.getElementById("errorText");
-    const ddayValue = document.getElementById("ddayValue");
-    const pairNotice = document.getElementById("pairNotice");
-    const lockInput = document.getElementById("lockInput");
-    const pinDots = document.getElementById("pinDots");
-    const dots = Array.from(pinDots.querySelectorAll(".pin-dot"));
-    const params = new URLSearchParams(window.location.search);
+    // ── Ember particles (lock screen) ──────────
+    (function () {
+      const screen = document.getElementById("lockScreen");
+      for (let i = 0; i < 16; i++) {
+        const el   = document.createElement("div");
+        el.className = "ember-particle";
+        const size  = (Math.random() * 4 + 2).toFixed(1);
+        const left  = (Math.random() * 96 + 2).toFixed(1);
+        const dur   = (Math.random() * 9 + 7).toFixed(1);
+        const delay = -(Math.random() * 10).toFixed(1);
+        const drift = ((Math.random() - 0.5) * 60).toFixed(0) + "px";
+        const hue   = Math.random() > 0.5 ? "#f09028" : "#e06020";
+        el.style.cssText = [
+          `width:${size}px`, `height:${size}px`,
+          `left:${left}%`, `bottom:-8px`,
+          `background:${hue}`,
+          `--drift:${drift}`,
+          `animation-duration:${dur}s`,
+          `animation-delay:${delay}s`,
+          `filter:blur(${Math.random() > 0.5 ? 1 : 0}px)`
+        ].join(";");
+        screen.appendChild(el);
+      }
+    })();
 
-    pinDots.addEventListener("click", function () {
-      lockInput.focus();
-    });
+    // ── DOM refs ───────────────────────────────
+    const lockScreen  = document.getElementById("lockScreen");
+    const invitation  = document.getElementById("invitation");
+    const lockForm    = document.getElementById("lockForm");
+    const lockCard    = document.querySelector(".lock-card");
+    const errorText   = document.getElementById("errorText");
+    const ddayEl      = document.getElementById("ddayValue");
+    const pairEl      = document.getElementById("pairNotice");
+    const lockInput   = document.getElementById("lockInput");
+    const pinRow      = document.getElementById("pinDots");
+    const dots        = Array.from(pinRow.querySelectorAll(".pin-dot"));
+    const params      = new URLSearchParams(window.location.search);
+    const previewDate = params.get("kstDate");
 
+    // ── PIN interaction ────────────────────────
+    // Auto-focus on load so keyboard opens immediately on mobile
+    lockInput.focus();
+    // Tap anywhere in card to re-open keyboard
+    lockCard.addEventListener("click", () => lockInput.focus());
     lockInput.addEventListener("input", function () {
-      const len = lockInput.value.length;
-      dots.forEach(function (dot, i) {
-        dot.classList.toggle("filled", i < len);
-      });
+      const len = this.value.length;
+      dots.forEach((d, i) => d.classList.toggle("filled", i < len));
+      // Auto-submit on mobile when 4 digits entered
+      if (len === 4) {
+        setTimeout(() => lockForm.dispatchEvent(new Event("submit")), 120);
+      }
     });
-    const previewKstDate = params.get("kstDate");
 
-    function verifyPassword(input) {
-      return input === PASSWORD;
-    }
-
+    // ── KST date helpers ───────────────────────
     function getKstYmd(now) {
-      const fmt = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Seoul",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
+      const fmt   = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit"
       });
       const parts = fmt.formatToParts(now);
-      const y = Number(parts.find((p) => p.type === "year").value);
-      const m = Number(parts.find((p) => p.type === "month").value);
-      const d = Number(parts.find((p) => p.type === "day").value);
-      return { y, m, d };
+      return {
+        y: +parts.find(p => p.type === "year").value,
+        m: +parts.find(p => p.type === "month").value,
+        d: +parts.find(p => p.type === "day").value
+      };
     }
 
-    function ymdToUtcMidnight(ymd) {
-      return Date.UTC(ymd.y, ymd.m - 1, ymd.d);
-    }
+    function ymdMs(ymd) { return Date.UTC(ymd.y, ymd.m - 1, ymd.d); }
 
-    function parseYmd(ymdText) {
-      if (!ymdText || !/^\d{4}-\d{2}-\d{2}$/.test(ymdText)) return null;
-      const [y, m, d] = ymdText.split("-").map(Number);
+    function parseYmd(s) {
+      if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+      const [y, m, d] = s.split("-").map(Number);
       if (!y || m < 1 || m > 12 || d < 1 || d > 31) return null;
       return { y, m, d };
     }
 
-    function getTodayKstYmd() {
-      const preview = parseYmd(previewKstDate);
-      if (preview) return preview;
-      return getKstYmd(new Date());
-    }
+    function todayKst() { return parseYmd(previewDate) || getKstYmd(new Date()); }
 
-    function calcDdayKst(todayYmd, eventYmd) {
-      const diffMs = ymdToUtcMidnight(eventYmd) - ymdToUtcMidnight(todayYmd);
-      const diffDays = Math.round(diffMs / 86400000);
-      if (diffDays > 0) return "D-" + diffDays;
-      if (diffDays === 0) return "D-Day";
+    function calcDday(today, event) {
+      const diff = Math.round((ymdMs(event) - ymdMs(today)) / 86400000);
+      if (diff > 0) return "D-" + diff;
+      if (diff === 0) return "D-Day";
       return "행사 종료";
     }
 
-    function renderDday() {
-      const todayKst = getTodayKstYmd();
-      ddayValue.textContent = calcDdayKst(todayKst, EVENT_DATE_KST);
+    function render() {
+      const today = todayKst();
+      ddayEl.textContent = calcDday(today, EVENT_DATE_KST);
+      const announced = ymdMs(today) >= ymdMs(PAIR_ANNOUNCE_DATE_KST);
+      pairEl.textContent = announced ? PAIR_NOTICE_AFTER : PAIR_NOTICE_BEFORE;
     }
 
-    function renderPairNotice() {
-      const todayKst = getTodayKstYmd();
-      const isAnnounced =
-        ymdToUtcMidnight(todayKst) >= ymdToUtcMidnight(PAIR_ANNOUNCE_DATE_KST);
-      pairNotice.textContent = isAnnounced ? PAIR_NOTICE_AFTER : PAIR_NOTICE_BEFORE;
-    }
-
-
-    const imgModal = document.getElementById("imgModal");
-    const imgModalClose = document.getElementById("imgModalClose");
-    const bbqSvg = document.getElementById("bbqSvg");
-    const attendeeModal = document.getElementById("attendeeModal");
-    const attendeeModalClose = document.getElementById("attendeeModalClose");
-    const card = document.querySelector(".card");
-
-    bbqSvg.addEventListener("click", function (e) {
-      e.stopPropagation();
-      imgModal.classList.add("open");
-    });
-
-    imgModalClose.addEventListener("click", function (e) {
-      e.stopPropagation();
-      imgModal.classList.remove("open");
-    });
-
-    imgModal.addEventListener("click", function (e) {
-      if (e.target === imgModal) imgModal.classList.remove("open");
-    });
-
-    card.addEventListener("click", function () {
-      attendeeModal.classList.add("open");
-    });
-
-    attendeeModalClose.addEventListener("click", function (e) {
-      e.stopPropagation();
-      attendeeModal.classList.remove("open");
-    });
-
-    attendeeModal.addEventListener("click", function (e) {
-      if (e.target === attendeeModal) attendeeModal.classList.remove("open");
-    });
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        imgModal.classList.remove("open");
-        attendeeModal.classList.remove("open");
-      }
-    });
-
+    // ── Lock form ──────────────────────────────
     lockForm.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (verifyPassword(lockInput.value)) {
+      if (lockInput.value === PASSWORD) {
         errorText.textContent = "";
         lockScreen.classList.add("unlocking");
-        window.setTimeout(function () {
+        setTimeout(() => {
           lockScreen.style.display = "none";
           invitation.style.display = "block";
-          renderDday();
-          renderPairNotice();
-        }, 500);
+          render();
+        }, 900);
         return;
       }
       lockInput.value = "";
-      dots.forEach(function (dot) { dot.classList.remove("filled"); });
+      dots.forEach(d => d.classList.remove("filled"));
       errorText.textContent = "비밀번호가 올바르지 않습니다.";
       lockCard.classList.remove("shake");
-      window.setTimeout(function () {
-        lockCard.classList.add("shake");
-      }, 0);
+      requestAnimationFrame(() => lockCard.classList.add("shake"));
+    });
+
+    // ── Modals ─────────────────────────────────
+    const attendeeModal      = document.getElementById("attendeeModal");
+    const attendeeModalClose = document.getElementById("attendeeModalClose");
+    const imgModal           = document.getElementById("imgModal");
+    const imgModalClose      = document.getElementById("imgModalClose");
+    const bbqIllustration    = document.getElementById("bbqIllustration");
+    const attendeeBtn        = document.getElementById("attendeeBtn");
+
+    function openModal(el)  { el.classList.add("open"); }
+    function closeModal(el) { el.classList.remove("open"); }
+
+    bbqIllustration.addEventListener("click",  () => openModal(imgModal));
+    bbqIllustration.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") openModal(imgModal); });
+
+    imgModalClose.addEventListener("click",  e => { e.stopPropagation(); closeModal(imgModal); });
+    imgModal.addEventListener("click",       e => { if (e.target === imgModal) closeModal(imgModal); });
+
+    attendeeBtn.addEventListener("click",  () => openModal(attendeeModal));
+    attendeeBtn.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") openModal(attendeeModal); });
+
+    attendeeModalClose.addEventListener("click",  e => { e.stopPropagation(); closeModal(attendeeModal); });
+    attendeeModal.addEventListener("click",       e => { if (e.target === attendeeModal) closeModal(attendeeModal); });
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") { closeModal(imgModal); closeModal(attendeeModal); }
     });
   </script>
 </body>
